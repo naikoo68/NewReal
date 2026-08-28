@@ -7,7 +7,7 @@ export default function AdminLogin() {
   const { login, logout } = useAuth();
   const navigate = useNavigate();
   const [showPw, setShowPw] = useState(false);
-  const [form, setForm] = useState({ email: "admin@myprepmart.com", password: "" });
+  const [form, setForm] = useState({ email: "admin@mystudyguide.com", password: "" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -17,7 +17,7 @@ export default function AdminLogin() {
     setBusy(true);
     try {
       const profile = await login(form.email, form.password);
-      if (profile?.role !== "admin") {
+      if (profile?.role !== "admin" && profile?.role !== "institute_admin") {
         logout();
         setError("This account does not have admin access.");
         return;
@@ -56,6 +56,9 @@ export default function AdminLogin() {
               <input
                 required
                 type="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="input pl-9"
@@ -90,7 +93,7 @@ export default function AdminLogin() {
         </form>
 
         <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-center text-xs text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
-          Demo: <b>admin@myprepmart.com</b> / <b>admin123</b>
+          Demo: <b>admin@mystudyguide.com</b> / <b>admin123</b>
         </p>
 
         <p className="mt-4 text-center text-sm text-slate-500">

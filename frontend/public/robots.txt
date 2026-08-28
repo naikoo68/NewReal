@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Keep private/app areas out of search results
+Disallow: /admin
+Disallow: /client
+Disallow: /dashboard
+
+Sitemap: https://mystudyguideme.vercel.app/sitemap.xml

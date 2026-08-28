@@ -3,8 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#2563eb" />
+
+    <!-- Installable PWA (client "My Practice" app) -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="My Practice" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- SPA deep-link restore: if 404.html bounced here with the original path
+         encoded as "?/...", rewrite the URL back to that path BEFORE the app
+         boots, so refreshing a client-side route keeps you on that route
+         instead of landing on the home page. No-op on normal visits. -->
+    <script>
+      (function () {
+        var l = window.location;
+        if (l.search[1] === "/") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) { return s.replace(/~and~/g, "&"); })
+            .join("?");
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })();
+    </script>
+
+    <!-- Connect to the API backend early to cut request latency -->
+    <link rel="preconnect" href="https://my-prep-mart-api-39nk.onrender.com" crossorigin />
+    <link rel="dns-prefetch" href="https://my-prep-mart-api-39nk.onrender.com" />
 
     <!-- SEO -->
     <title>My Study Guide — Prepare Smart, Achieve More</title>
@@ -14,20 +44,27 @@
     />
     <meta name="keywords" content="quiz, test series, exam preparation, JEE, NEET, mock tests, online learning" />
     <meta name="author" content="My Study Guide" />
+    <link rel="canonical" href="https://mystudyguideme.vercel.app/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mystudyguideme.vercel.app/" />
     <meta property="og:title" content="My Study Guide — Prepare Smart, Achieve More" />
     <meta
       property="og:description"
       content="Subject-wise quizzes, full-length test series, instant results and analytics."
     />
     <meta property="og:site_name" content="My Study Guide" />
+    <meta property="og:image" content="https://mystudyguideme.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="My Study Guide — Prepare Smart, Achieve More" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="My Study Guide — Prepare Smart, Achieve More" />
     <meta name="twitter:description" content="Quizzes, test series and analytics for exam aspirants." />
+    <meta name="twitter:image" content="https://mystudyguideme.vercel.app/og-image.png" />
   </head>
   <body>
     <div id="root"></div>

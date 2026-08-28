@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import "../lib/chartSetup";
 import {
@@ -13,27 +13,44 @@ import {
   ArrowRight,
   Crown,
 } from "lucide-react";
+import { UserCog } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { analyticsService } from "../services";
+import { analyticsService, noticeService } from "../services";
 import StatCard from "../components/ui/StatCard";
 import Badge from "../components/ui/Badge";
 import ProgressBar from "../components/ui/ProgressBar";
+import Avatar from "../components/ui/Avatar";
+import ProfilePhotoCard from "../components/ui/ProfilePhotoCard";
 import { Loading, ErrorState, EmptyState } from "../components/ui/AsyncState";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [board, setBoard] = useState([]);
+  const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Follow a notice's link (internal → router, external → new tab).
+  const goNotice = (link) => {
+    if (!link) return;
+    if (/^https?:\/\//i.test(link)) window.open(link, "_blank", "noopener");
+    else navigate(link);
+  };
 
   const load = () => {
     setLoading(true);
     setError("");
-    Promise.all([analyticsService.dashboard(), analyticsService.leaderboard().catch(() => [])])
-      .then(([d, lb]) => {
+    Promise.all([
+      analyticsService.dashboard(),
+      analyticsService.leaderboard().catch(() => []),
+      noticeService.list().catch(() => []),
+    ])
+      .then(([d, lb, ns]) => {
         setData(d);
         setBoard(lb);
+        setNotices(Array.isArray(ns) ? ns : []);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -69,13 +86,18 @@ export default function Dashboard() {
       {/* Welcome + profile */}
       <div className="flex flex-col gap-5 rounded-3xl bg-gradient-to-r from-brand-600 to-accent-500 p-6 text-white sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold backdrop-blur">
-            {profile.avatar}
-          </span>
+          <Avatar src={profile.avatar} name={profile.name} size={64} fallbackClassName="bg-white/20 text-white backdrop-blur" />
+
           <div>
             <p className="text-sm text-white/80">Welcome back,</p>
             <h1 className="text-2xl font-extrabold">{profile.name}</h1>
             <p className="text-sm text-white/80">{profile.email}</p>
+            <Link
+              to="/account"
+              className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur transition hover:bg-white/25"
+            >
+              <UserCog className="h-3.5 w-3.5" /> Manage account
+            </Link>
           </div>
         </div>
         <div className="flex gap-3">
@@ -99,6 +121,8 @@ export default function Dashboard() {
         <StatCard icon="CheckCircle2" label="Completed Tests" value={stats.completed} accent="green" />
         <StatCard icon="TrendingUp" label="Avg. Percentile" value={`${stats.avgPercentile}`} accent="violet" />
       </div>
+
+      <ProfilePhotoCard className="mt-6" />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         {/* Left column */}
@@ -134,7 +158,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex items-center gap-3">
                       <Badge variant={t.difficulty}>{t.difficulty}</Badge>
-                      <Link to={`/test-series/${t._id}/attempt`} className="btn-primary py-2">
+                      <Link to={`/test-series/attempt/${t._id}`} className="btn-primary py-2">
                         Start <ArrowRight className="h-4 w-4" />
                       </Link>
                     </div>
@@ -189,16 +213,21 @@ export default function Dashboard() {
                     <span className={`w-5 text-center text-sm font-bold ${p.rank <= 3 ? "text-amber-500" : "text-slate-400"}`}>
                       {p.rank}
                     </span>
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-bold dark:bg-slate-700">
-                      {p.avatar}
+                    <Avatar src={p.avatar} name={p.name} size={32} fallbackClassName="bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200" />
+
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{p.name}</p>
+                      <p className="text-xs text-slate-400">{p.quizzes ?? 0} quizzes · {p.tests ?? 0} tests</p>
+                    </div>
+                    <span className="text-right text-sm font-semibold text-slate-500">
+                      {p.taken ?? 0}
+                      <span className="block text-[10px] font-normal text-slate-400">taken</span>
                     </span>
-                    <span className="flex-1 truncate text-sm font-medium">{p.name}</span>
-                    <span className="text-sm font-semibold text-slate-500">{p.score}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <EmptyState message="Leaderboard fills up as students attempt tests." />
+              <EmptyState message="Leaderboard fills up as students attempt quizzes & tests." />
             )}
           </div>
 
@@ -226,14 +255,39 @@ export default function Dashboard() {
             <h3 className="mb-4 flex items-center gap-2 font-bold">
               <Bell className="h-5 w-5 text-accent-500" /> Notifications
             </h3>
-            <div className="flex gap-3">
-              <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-accent-500" />
-              <div>
-                <p className="text-sm font-semibold">Welcome to My Study Guide</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Keep your {profile.streak}-day streak going — attempt a quiz today!
-                </p>
-              </div>
+            <div className="space-y-2.5">
+              {notices.length === 0 ? (
+                <div className="flex gap-3">
+                  <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-accent-500" />
+                  <div>
+                    <p className="text-sm font-semibold">Welcome to My Study Guide</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Keep your {profile.streak}-day streak going — attempt a quiz today!
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                notices.slice(0, 6).map((n) => {
+                  const clickable = !!n.link;
+                  return (
+                    <div
+                      key={n._id}
+                      onClick={() => clickable && goNotice(n.link)}
+                      className={`flex gap-3 rounded-lg border border-slate-100 p-2.5 dark:border-slate-800 ${clickable ? "cursor-pointer transition hover:border-brand-400 hover:bg-brand-50/50 dark:hover:bg-brand-900/20" : ""}`}
+                    >
+                      <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-accent-500" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{n.text}</p>
+                        {clickable && (
+                          <span className="mt-0.5 inline-flex items-center gap-1 text-xs font-semibold text-brand-600 dark:text-brand-400">
+                            {/^https?:\/\//i.test(n.link) ? "Open link" : "Go to it"} <ArrowRight className="h-3 w-3" />
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

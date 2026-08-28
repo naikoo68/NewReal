@@ -52,7 +52,10 @@ function loadFont(family) {
 
 export function applyTheme(settings = {}) {
   const root = document.documentElement;
-  const { primaryColor, accentColor, fontFamily } = settings;
+  const {
+    primaryColor, accentColor, fontFamily,
+    navHeight, navBrandSize, navFontSize, navFontWeight, navFontFamily, navTextTransform,
+  } = settings;
 
   const brand = primaryColor && paletteVars(primaryColor, 600);
   if (brand) Object.entries(brand).forEach(([k, v]) => root.style.setProperty(`--brand-${k}`, v));
@@ -63,6 +66,20 @@ export function applyTheme(settings = {}) {
   if (fontFamily) {
     loadFont(fontFamily);
     root.style.setProperty("--app-font", `'${fontFamily}', ui-sans-serif, system-ui, sans-serif`);
+  }
+
+  // ---- Navbar appearance (admin-customisable) ----
+  root.style.setProperty("--nav-height", `${Number(navHeight) || 64}px`);
+  root.style.setProperty("--nav-brand-size", `${Number(navBrandSize) || 18}px`);
+  root.style.setProperty("--nav-font-size", `${Number(navFontSize) || 14}px`);
+  root.style.setProperty("--nav-font-weight", String(navFontWeight || 500));
+  root.style.setProperty("--nav-text-transform", navTextTransform || "none");
+  const navFam = navFontFamily || fontFamily;
+  if (navFam) {
+    loadFont(navFam);
+    root.style.setProperty("--nav-font-family", `'${navFam}', ui-sans-serif, system-ui, sans-serif`);
+  } else {
+    root.style.setProperty("--nav-font-family", "var(--app-font, 'Inter', sans-serif)");
   }
 }
 

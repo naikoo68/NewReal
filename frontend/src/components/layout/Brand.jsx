@@ -2,7 +2,7 @@ import { GraduationCap } from "lucide-react";
 import { useSettings } from "../../context/SettingsContext";
 
 // Renders the site logo + name from admin-configurable settings.
-export default function Brand({ light = false, textClass = "text-lg" }) {
+export default function Brand({ light = false, textClass = "text-lg", nameStyle }) {
   const { settings } = useSettings();
   return (
     <span className="flex items-center gap-2">
@@ -21,7 +21,7 @@ export default function Brand({ light = false, textClass = "text-lg" }) {
           <GraduationCap className="h-5 w-5" />
         </span>
       )}
-      <span className={`font-extrabold tracking-tight ${textClass}`}>{settings.siteName}</span>
+      <span className={`font-extrabold tracking-tight ${textClass}`} style={nameStyle}>{settings.siteName}</span>
     </span>
   );
 }

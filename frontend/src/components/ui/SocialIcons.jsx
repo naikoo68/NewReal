@@ -54,6 +54,22 @@ export function Youtube({ className }) {
   );
 }
 
+export function Whatsapp({ className }) {
+  return (
+    <Svg className={className}>
+      <path d="M12.04 2c-5.46 0-9.9 4.43-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.3-1.38a9.9 9.9 0 0 0 4.73 1.2h.01c5.46 0 9.9-4.43 9.9-9.9 0-2.64-1.03-5.13-2.9-7A9.82 9.82 0 0 0 12.04 2zm0 1.8c2.16 0 4.18.84 5.71 2.37a8.05 8.05 0 0 1 2.37 5.72c0 4.46-3.63 8.09-8.09 8.09-1.42 0-2.82-.38-4.04-1.1l-.29-.17-3.01.79.8-2.94-.19-.3a8.03 8.03 0 0 1-1.23-4.29c0-4.46 3.63-8.08 8.09-8.08zm-2.87 4.4c-.14 0-.36.05-.55.26-.19.21-.72.71-.72 1.72s.74 1.99.84 2.13c.1.14 1.44 2.2 3.5 3.09.49.21.87.34 1.17.43.49.16.94.14 1.29.08.39-.06 1.21-.49 1.38-.97.17-.48.17-.89.12-.97-.05-.09-.19-.14-.4-.24-.21-.11-1.21-.6-1.4-.67-.19-.07-.33-.1-.46.1-.14.21-.53.67-.65.81-.12.14-.24.16-.44.05-.21-.1-.87-.32-1.66-1.02-.61-.55-1.03-1.22-1.15-1.43-.12-.21-.01-.32.09-.42.09-.09.21-.24.31-.36.1-.12.14-.21.21-.35.07-.14.03-.26-.02-.36-.05-.1-.46-1.11-.63-1.52-.17-.4-.34-.35-.46-.35l-.39-.01z" />
+    </Svg>
+  );
+}
+
+export function Telegram({ className }) {
+  return (
+    <Svg className={className}>
+      <path d="M21.94 4.3 18.9 19.1c-.23 1.02-.84 1.27-1.7.79l-4.7-3.46-2.27 2.18c-.25.25-.46.46-.94.46l.33-4.77 8.66-7.83c.38-.34-.08-.53-.59-.19L6.72 13.2l-4.62-1.45c-1-.31-1.02-1 .21-1.48l18.06-6.96c.84-.31 1.57.2 1.3 1z" />
+    </Svg>
+  );
+}
+
 export function Website({ className }) {
   return (
     <Svg className={className}>
@@ -69,8 +85,23 @@ export const SOCIAL_ICONS = {
   instagram: Instagram,
   linkedin: Linkedin,
   youtube: Youtube,
+  whatsapp: Whatsapp,
+  telegram: Telegram,
   website: Website,
   other: Website,
 };
 
-export const SOCIAL_PLATFORMS = ["facebook", "twitter", "instagram", "linkedin", "youtube", "website", "other"];
+export const SOCIAL_PLATFORMS = ["facebook", "twitter", "instagram", "linkedin", "youtube", "whatsapp", "telegram", "website", "other"];
+
+// Brand background colours so icons look like phone app icons.
+export const SOCIAL_COLORS = {
+  facebook: "#1877F2",
+  twitter: "#000000",
+  instagram: "#E1306C",
+  linkedin: "#0A66C2",
+  youtube: "#FF0000",
+  whatsapp: "#25D366",
+  telegram: "#229ED9",
+  website: "#475569",
+  other: "#475569",
+};

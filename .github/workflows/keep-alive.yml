@@ -1,10 +1,12 @@
 name: Keep backend awake
 
-# Pings the backend health endpoint every 10 minutes so the free-tier
-# server never idles into sleep (Render spins down after ~15 min of no traffic).
+# Pings the backend health endpoint every 5 minutes so the free-tier server
+# never idles into sleep (Render spins down after ~15 min of no traffic). The
+# health endpoint also declares any due CBT results on each ping, so results
+# release on their own (within ~5 min) without an admin opening the panel.
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch: {}
 
 jobs:

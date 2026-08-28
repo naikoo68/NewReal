@@ -36,9 +36,13 @@
   html {
     scroll-behavior: smooth;
     font-family: var(--app-font);
+    /* Stop the mobile browser's pull-to-refresh gesture from reloading the page
+       (it triggers easily after pinch-zooming out and swiping at the top). */
+    overscroll-behavior-y: contain;
   }
   body {
     @apply bg-slate-50 text-slate-800 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    overscroll-behavior-y: contain;
   }
 }
 
@@ -75,6 +79,55 @@
   }
 }
 
+/* Stop iOS Safari (and other mobile browsers) from auto-zooming the page when a
+   form field is focused: it zooms whenever the focused control's font-size is
+   below 16px, and our inputs use text-sm (14px). Force >=16px on TOUCH devices
+   only (phones/tablets). iOS only checks the font-size at the moment a field is
+   FOCUSED, so we bump to 16px on :focus only — the field keeps the app's normal
+   small text (matching the rest of the UI) when idle, and there's no zoom while
+   typing. !important overrides Tailwind's text-sm/text-xs utilities on inputs. */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+  textarea:focus,
+  select:focus {
+    font-size: 16px !important;
+    /* Proportional leading so the 16px focused text isn't cramped/clipped. */
+    line-height: 1.5 !important;
+  }
+}
+
+/* Scrolling notice board (marquee) — moves content right → left, loops. */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+.marquee-track:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* Content protection: block selection/copy for students (inputs stay usable). */
+.no-select,
+.no-select * {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+.no-select input,
+.no-select textarea,
+.no-select [contenteditable="true"] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  user-select: text !important;
+}
+
 /* custom scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
@@ -89,4 +142,37 @@
 }
 .dark ::-webkit-scrollbar-thumb {
   background: #334155;
+}
+
+
+/* --- KaTeX line fix ---------------------------------------------------------
+   KaTeX draws fraction bars, sqrt/overline/underline vinculums and \rule using
+   element BORDERS. Tailwind's Preflight resets every element's border-color to a
+   faint gray, which makes those lines nearly invisible — the fraction "divide"
+   bar in $\frac{a}{b}$ disappears. Force these rules back to the current text
+   colour so they render in both light and dark mode. */
+.katex .frac-line,
+.katex .overline .overline-line,
+.katex .underline .underline-line,
+.katex .hline,
+.katex .hdashline,
+.katex .rule {
+  border-color: currentColor !important;
+}
+.katex .frac-line { border-bottom-color: currentColor !important; }
+
+
+/* ---------------------------------------------------------------------------
+   Installed PWA (iOS / Android standalone) — respect the device safe areas so
+   the sticky top bar doesn't sit under the status bar / notch, and page bottom
+   content clears the home indicator. Only applies when launched as an app.
+   (Requires <meta name="viewport" content="...viewport-fit=cover">, which is set.)
+   ------------------------------------------------------------------------ */
+@media (display-mode: standalone) {
+  header.sticky.top-0 {
+    padding-top: env(safe-area-inset-top);
+  }
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

@@ -39,11 +39,12 @@ export default function SubjectTopics() {
   }
 
   const Icon = Icons[subject.icon] || Icons.BookOpen;
+  const backTo = subject.stream ? `/quiz/stream/${subject.stream}` : "/quiz";
 
   return (
     <div className="container-page py-12">
-      <Link to="/quiz" className="btn-ghost mb-6 -ml-2 w-fit">
-        <ChevronLeft className="h-4 w-4" /> All subjects
+      <Link to={backTo} className="btn-ghost mb-6 -ml-2 w-fit">
+        <ChevronLeft className="h-4 w-4" /> Back to subjects
       </Link>
 
       <div className="flex flex-col gap-5 rounded-3xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center dark:border-slate-800 dark:bg-slate-900">

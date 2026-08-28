@@ -1,0 +1,53 @@
+name: CI
+
+# Validates every push and pull request to main so a broken build is caught
+# *before* Vercel (frontend) and Render (backend) auto-deploy it to production.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend — lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      # Lint is advisory: it reports issues but does not fail the pipeline, so
+      # pre-existing lint debt across the codebase can't block deploys. The
+      # build below is the hard gate. Flip continue-on-error to false once the
+      # codebase is lint-clean to enforce linting again.
+      - name: Lint (advisory)
+        run: npm run lint
+        continue-on-error: true
+      - run: npm run build
+
+  backend:
+    name: Backend — install & syntax check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - name: Syntax-check all source files
+        run: |
+          set -e
+          for f in $(find src -name "*.js"); do node --check "$f"; done
+          echo "All backend files passed syntax check."

@@ -1,12 +1,13 @@
 {
-  "name": "my-prep-mart-backend",
+  "name": "my-study-guide-backend",
   "version": "1.0.0",
-  "description": "REST API for My Prep Mart — quizzes & test series platform",
+  "description": "REST API for My Study Guide — quizzes & test series platform",
   "type": "module",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "migrate:tenants": "node src/scripts/migrateTenants.js",
     "seed": "node src/utils/seed.js"
   },
   "keywords": [
@@ -26,8 +27,10 @@
     "express-rate-limit": "^7.4.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "mathjax-full": "^3.2.2",
     "mongoose": "^8.8.0",
     "morgan": "^1.10.0",
-    "multer": "^2.0.0"
+    "multer": "^2.0.0",
+    "nodemailer": "^9.0.3"
   }
 }

@@ -7,7 +7,10 @@ import { useAuth } from "../../context/AuthContext";
 export default function ProtectedRoute({ children, role }) {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const loginPath = role === "admin" ? "/admin/login" : "/login";
+  // `role` may be a single role or an array of allowed roles.
+  const roles = role ? (Array.isArray(role) ? role : [role]) : null;
+  const isAdminArea = !!roles && (roles.includes("admin") || roles.includes("institute_admin"));
+  const loginPath = isAdminArea ? "/admin/login" : "/login";
 
   // While revalidating the session, avoid a premature redirect.
   if (loading && !user) {
@@ -18,7 +21,7 @@ export default function ProtectedRoute({ children, role }) {
     );
   }
 
-  if (!user || (role && user.role !== role)) {
+  if (!user || (roles && !roles.includes(user.role))) {
     return <Navigate to={loginPath} state={{ from: location.pathname }} replace />;
   }
   return children;

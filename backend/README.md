@@ -1,6 +1,6 @@
-# My Prep Mart — Backend API
+# My Study Guide — Backend API
 
-REST API for the My Prep Mart platform, built with **Node.js + Express + MongoDB (Mongoose)**, JWT authentication, role-based authorization, and Cloudinary uploads.
+REST API for the My Study Guide platform, built with **Node.js + Express + MongoDB (Mongoose)**, JWT authentication, role-based authorization, and Cloudinary uploads.
 
 ## Tech Stack
 
@@ -24,8 +24,8 @@ npm run dev                 # starts on http://localhost:5000
 > Requires a running MongoDB instance (local or MongoDB Atlas). Set `MONGO_URI` in `.env`.
 
 Seeded credentials:
-- Admin: `admin@myprepmart.com` / `admin123`
-- Student: `student@myprepmart.com` / `student123`
+- Admin: `admin@mystudyguide.com` / `admin123`
+- Student: `student@mystudyguide.com` / `student123`
 
 ## Project Structure
 

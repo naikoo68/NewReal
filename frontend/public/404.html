@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting…</title>
+    <meta name="robots" content="noindex" />
+    <script>
+      // SPA deep-link fallback.
+      // Some static hosts serve THIS page when a client-side route is opened
+      // directly or refreshed (they can't find a real file at that path). We
+      // encode the requested path into a query string and bounce to the app
+      // root, where index.html restores the real URL before React boots — so a
+      // refresh keeps you on the page you were on instead of dropping to the
+      // landing/home page. Based on the well-known spa-github-pages technique.
+      (function () {
+        var l = window.location;
+        var pathSegmentsToKeep = 0; // deployed at the domain root (base = "/")
+        l.replace(
+          l.protocol + "//" + l.host +
+          l.pathname.split("/").slice(0, 1 + pathSegmentsToKeep).join("/") + "/?/" +
+          l.pathname.slice(1).split("/").slice(pathSegmentsToKeep).join("/").replace(/&/g, "~and~") +
+          (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+          l.hash
+        );
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

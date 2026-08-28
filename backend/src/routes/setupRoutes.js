@@ -5,11 +5,11 @@ import { seedDatabase } from "../utils/seedData.js";
 const router = Router();
 
 // Confirmation token required to wipe & rebuild an already-initialized database.
-const FORCE_TOKEN = "reset-myprepmart";
+const FORCE_TOKEN = "reset-mystudyguide";
 
 // GET /api/setup — one-time bootstrap. Seeds the database with the admin,
 // student and sample content. Automatically disabled once an admin exists,
-// unless ?force=reset-myprepmart is supplied (wipes and rebuilds everything).
+// unless ?force=reset-mystudyguide is supplied (wipes and rebuilds everything).
 router.get("/", async (req, res) => {
   try {
     const force = req.query.force === FORCE_TOKEN;
@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
       return res.status(403).json({
         message:
           "Already initialized — an admin account exists, so setup is disabled. " +
-          "To wipe and rebuild with fresh sample data, add ?force=reset-myprepmart to the URL.",
+          "To wipe and rebuild with fresh sample data, add ?force=reset-mystudyguide to the URL.",
       });
     }
 

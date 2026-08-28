@@ -1,4 +1,4 @@
-# My Prep Mart
+# My Study Guide
 
 A modern, responsive, **full-stack** educational platform for **quizzes and test-series preparation**.
 Blue/white/orange theme, dark + light mode, smooth animations, charts, dashboards and a full admin panel.
@@ -32,7 +32,7 @@ cp .env.example .env          # VITE_API_URL=http://localhost:5000/api
 npm run dev                   # http://localhost:5173
 ```
 
-Seeded logins: **admin@myprepmart.com / admin123** · **student@myprepmart.com / student123**
+Seeded logins: **admin@mystudyguide.com / admin123** · **student@mystudyguide.com / student123**
 
 ## ✨ Features
 
@@ -81,7 +81,7 @@ The frontend runs fully standalone using local sample data, so you can explore e
 cd backend
 npm install
 cp .env.example .env     # fill MONGO_URI, JWT_SECRET, Cloudinary keys
-npm run seed             # sample data + admin@myprepmart.com / admin123
+npm run seed             # sample data + admin@mystudyguide.com / admin123
 npm run dev              # http://localhost:5000
 ```
 

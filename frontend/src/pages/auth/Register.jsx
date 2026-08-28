@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Mail, Lock, Eye, EyeOff, UserPlus, MailCheck, Loader2, AlertCircle } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, UserPlus, Loader2, AlertCircle } from "lucide-react";
 import AuthShell, { GoogleButton } from "../../components/auth/AuthShell";
+import OtpVerify from "../../components/auth/OtpVerify";
+import AccountTypeTabs from "../../components/auth/AccountTypeTabs";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  // Switching to "Client" jumps to the plan-based client registration.
+  const onType = (k) => { if (k === "client") navigate("/client/register"); };
   const [showPw, setShowPw] = useState(false);
-  const [verifySent, setVerifySent] = useState(false);
+  const [otpStep, setOtpStep] = useState(null); // { email, devOtp, emailSent }
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -18,9 +22,8 @@ export default function Register() {
     setError("");
     setBusy(true);
     try {
-      // Creates the account on the backend and signs the user in (stores JWT).
-      await register(form.name, form.email, form.password);
-      setVerifySent(true);
+      const res = await register(form.name, form.email, form.password);
+      setOtpStep({ email: res.email || form.email, devOtp: res.devOtp, emailSent: res.emailSent });
     } catch (err) {
       setError(err.message || "Registration failed");
     } finally {
@@ -28,27 +31,23 @@ export default function Register() {
     }
   };
 
-  if (verifySent) {
+  if (otpStep) {
     return (
-      <AuthShell title="Account created">
-        <div className="card p-6 text-center">
-          <MailCheck className="mx-auto h-14 w-14 text-brand-600" />
-          <h3 className="mt-4 text-lg font-bold">You're all set!</h3>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            A verification email was sent to{" "}
-            <span className="font-semibold text-slate-800 dark:text-slate-200">{form.email}</span>.
-            You can verify anytime — your account is ready to use now.
-          </p>
-          <button onClick={() => navigate("/dashboard")} className="btn-primary mt-6 w-full">
-            Continue to Dashboard
-          </button>
-        </div>
+      <AuthShell title="Almost there">
+        <OtpVerify
+          email={otpStep.email}
+          devOtp={otpStep.devOtp}
+          emailSent={otpStep.emailSent}
+          onVerified={() => navigate("/dashboard")}
+          onLater={() => navigate("/login")}
+        />
       </AuthShell>
     );
   }
 
   return (
     <AuthShell title="Create your account" subtitle="Join 1,20,000+ students preparing the smart way.">
+      <AccountTypeTabs active="student" onSelect={onType} />
       <form onSubmit={submit} className="space-y-4">
         {error && (
           <div className="flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2.5 text-sm text-rose-700 dark:bg-rose-900/30 dark:text-rose-300">

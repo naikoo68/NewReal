@@ -1,9 +1,9 @@
-# Render Blueprint — deploys the My Prep Mart backend API.
+# Render Blueprint — deploys the My Study Guide backend API.
 # In Render: New → Blueprint → connect this repo. Render reads this file and
 # creates the web service. You only fill in MONGO_URI (and CLIENT_URL later).
 services:
   - type: web
-    name: my-prep-mart-api
+    name: my-prep-mart-api   # keep matching the EXISTING Render service — its name/URL are immutable
     runtime: node
     plan: free
     rootDir: backend
@@ -21,3 +21,10 @@ services:
         sync: false           # you paste your MongoDB Atlas connection string
       - key: CLIENT_URL
         sync: false           # set to your Vercel URL after the frontend deploys
+      # ---- AI Question Generator (optional) ----
+      - key: AI_API_KEY
+        sync: false           # your TokenLab (or other) API key — enables "Generate with AI"
+      - key: AI_BASE_URL
+        value: https://api.tokenlab.sh/v1
+      - key: AI_MODEL
+        sync: false           # one OR many model ids, comma-separated (first = default)
